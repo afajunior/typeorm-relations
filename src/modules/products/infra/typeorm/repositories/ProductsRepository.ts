@@ -55,10 +55,12 @@ class ProductsRepository implements IProductsRepository {
     const updateProducts: Product[] = []
 
     products.map(async product => {
-      const findProduct = await this.ormRepository.findOne(product.id);
+      const findProduct = await this.ormRepository.findOne();
       if (findProduct) {
-        findProduct.quantity = product.quantity;
-        this.ormRepository.save(findProduct);
+        this.ormRepository.save({
+          id: product.id,
+          quantity: product.quantity
+        });
         updateProducts.push(findProduct);
       }
     });

@@ -38,7 +38,6 @@ class CreateOrderService {
     };
 
     const findProducts = await this.productsRepository.findAllById(products);
-    const updateProducts: Product[] = []
 
     const orderProducts = products.map(product => {
       const auxProd = findProducts.find(p => p.id === product.id);
@@ -47,21 +46,20 @@ class CreateOrderService {
         throw new AppError('Invalid Product');
       }
 
-      if(auxProd?.quantity - product.quantity<0) {
+      if(auxProd.quantity - product.quantity<0) {
         throw new AppError('Unsufficient Quantities');
       }
 
       auxProd.quantity -= product.quantity;
-      updateProducts.push(auxProd);
 
       return {
         product_id: auxProd.id,
         price: auxProd.price,
         quantity: product.quantity,
       }
-    })
+    });
 
-    this.productsRepository.updateQuantity(findProducts);
+    const updataProducts = this.productsRepository.updateQuantity(findProducts);
 
     const order = await this.ordersRepository.create({
       customer: costumer,
